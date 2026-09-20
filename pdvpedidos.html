@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PDV de Pedidos - Plano 2</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f5f7;
+            color: #222;
+            min-height: 100vh;
+        }
+
+        .topo {
+            background: #111827;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topo h1 {
+            font-size: 25px;
+            margin-bottom: 5px;
+        }
+
+        .topo p {
+            color: #d1d5db;
+            font-size: 14px;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-sair {
+            background: #dc2626;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.08);
+        }
+
+        .pedidos {
+            grid-column: 1 / -1;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #111827;
+        }
+
+        .campo {
+            margin-bottom: 16px;
+        }
+
+        .campo label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .linha {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-principal,
+        .btn-finalizar {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .btn-principal {
+            background: #2563eb;
+        }
+
+        .btn-finalizar {
+            background: #16a34a;
+            margin-top: 18px;
+        }
+
+        .item-pedido,
+        .pedido-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .item-pedido-topo,
+        .pedido-cabecalho {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .item-pedido p {
+            margin-top: 6px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .btn-remover {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 6px 9px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .total {
+            border-top: 1px solid #e5e7eb;
+            margin-top: 20px;
+            padding-top: 18px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+        }
+
+        .total strong,
+        .pedido-total {
+            color: #16a34a;
+        }
+
+        .pedido-produto {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .pedido-total {
+            text-align: right;
+            margin-top: 12px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .status {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pendente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .preparo {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .pronto {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .entregue {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .cancelado {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .acoes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .acoes button {
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .preparo-btn {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .pronto-btn {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .entregue-btn {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .cancelar-btn {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .limpar {
+            background: #f3f4f6;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .vazio {
+            text-align: center;
+            color: #9ca3af;
+            padding: 25px 10px;
+        }
+
+        @media (max-width: 800px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .pedidos {
+                grid-column: auto;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .linha {
+                grid-template-columns: 1fr;
+            }
+
+            .topo {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .btn-sair {
+                width: 100%;
+            }
+
+            .cabecalho {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topo">
+
+    <div>
+        <h1>PDV de Pedidos</h1>
+        <p>Plano 2 — Controle de pedidos</p>
+    </div>
+
+    <button class="btn-sair" onclick="sair()">
+        Sair
+    </button>
+
+</header>
+
+
+<main class="container">
+
+    <section class="card">
+
+        <h2>Novo Pedido</h2>
+
+        <div class="campo">
+            <label>Cliente</label>
+            <input id="cliente" type="text" placeholder="Nome do cliente">
+        </div>
+
+        <div class="campo">
+            <label>Produto</label>
+            <input id="produto" type="text" placeholder="Digite o produto">
+        </div>
+
+        <div class="linha">
+
+            <div class="campo">
+                <label>Quantidade</label>
+                <input id="quantidade" type="number" min="1" value="1">
+            </div>
+
+            <div class="campo">
+                <label>Preço</label>
+                <input id="preco" type="number" min="0" step="0.01" placeholder="0,00">
+            </div>
+
+        </div>
+
+        <div class="campo">
+            <label>Observação</label>
+            <textarea id="observacao" placeholder="Ex.: sem cebola..."></textarea>
+        </div>
+
+        <button class="btn-principal" onclick="adicionarProduto()">
+            Adicionar ao pedido
+        </button>
+
+    </section>
+
+
+    <section class="card">
+
+        <h2>Pedido Atual</h2>
+
+        <div id="pedidoAtual">
+            <p class="vazio">Nenhum produto adicionado.</p>
+        </div>
+
+        <div class="total">
+            <span>Total:</span>
+            <strong id="total">R$ 0,00</strong>
+        </div>
+
+        <button class="btn-finalizar" onclick="finalizarPedido()">
+            Finalizar Pedido
+        </button>
+
+    </section>
+
+
+    <section class="card pedidos">
+
+        <div class="cabecalho">
+
+            <div>
+                <h2>Pedidos</h2>
+                <p>Acompanhe os pedidos realizados.</p>
+            </div>
+
+            <button class="limpar" onclick="limparPedidos()">
+                Limpar pedidos
+            </button>
+
+        </div>
+
+        <div id="listaPedidos">
+            <p class="vazio">Nenhum pedido realizado.</p>
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+let pedidoAtual = [];
+
+let pedidos = JSON.parse(
+    localStorage.getItem("pdvPedidos")
+) || [];
+
+
+function dinheiro(valor) {
+
+    return valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+
+}
+
+
+function adicionarProduto() {
+
+    const produto = document.getElementById("produto").value.trim();
+
+    const quantidade = Number(
+        document.getElementById("quantidade").value
+    );
+
+    const preco = Number(
+        document.getElementById("preco").value
+    );
+
+    const observacao = document
+        .getElementById("observacao")
+        .value
+        .trim();
+
+
+    if (!produto) {
+        alert("Digite o produto.");
+        return;
+    }
+
+    if (quantidade <= 0) {
+        alert("Digite uma quantidade válida.");
+        return;
+    }
+
+    if (preco < 0 || isNaN(preco)) {
+        alert("Digite um preço válido.");
+        return;
+    }
+
+
+    pedidoAtual.push({
+
+        id: Date.now(),
+
+        produto: produto,
+
+        quantidade: quantidade,
+
+        preco: preco,
+
+        observacao: observacao,
+
+        subtotal: quantidade * preco
+
+    });
+
+
+    document.getElementById("produto").value = "";
+
+    document.getElementById("quantidade").value = 1;
+
+    document.getElementById("preco").value = "";
+
+    document.getElementById("observacao").value = "";
+
+
+    mostrarPedidoAtual();
+
+}
+
+
+function mostrarPedidoAtual() {
+
+    const area = document.getElementById("pedidoAtual");
+
+    area.innerHTML = "";
+
+
+    if (pedidoAtual.length === 0) {
+
+        area.innerHTML =
+            '<p class="vazio">Nenhum produto adicionado.</p>';
+
+        document.getElementById("total").textContent =
+            "R$ 0,00";
+
+        return;
+    }
+
+
+    let total = 0;
+
+
+    pedidoAtual.forEach(function(item) {
+
+        total += item.subtotal;
+
+
+        const div = document.createElement("div");
+
+        div.className = "item-pedido";
+
+
+        div.innerHTML = `
+
+            <div class="item-pedido-topo">
+
+                <strong>${item.produto}</strong>
+
+                <button
+                    class="btn-remover"
+                    onclick="removerProduto(${item.id})">
+                    Remover
+                </button>
+
+            </div>
+
+            <p>
+                ${item.quantidade} x ${dinheiro(item.preco)}
+            </p>
+
+            <p>
+                Subtotal:
+                <strong>${dinheiro(item.subtotal)}</strong>
+            </p>
+
+            ${
+                item.observacao
+                ? `<p>Observação: ${item.observacao}</p>`
+                : ""
+            }
+
+        `;
+
+
+        area.appendChild(div);
+
+    });
+
+
+    document.getElementById("total").textContent =
+        dinheiro(total);
+
+}
+
+
+function removerProduto(id) {
+
+    pedidoAtual = pedidoAtual.filter(function(item) {
+
+        return item.id !== id;
+
+    });
+
+
+    mostrarPedidoAtual();
+
+}
+
+
+function finalizarPedido() {
+
+    if (pedidoAtual.length === 0) {
+
+        alert("Adicione um produto primeiro.");
+
+        return;
+    }
+
+
+    const cliente = document
+        .getElementById("cliente")
+        .value
+        .trim();
+
+
+    if (!cliente) {
+
+        alert("Digite o nome do cliente.");
+
+        return;
+    }
+
+
+    const total = pedidoAtual.reduce(
+        function(soma, item) {
+
+            return soma + item.subtotal;
+
+        },
+        0
+    );
+
+
+    const pedido = {
+
+        id: Date.now(),
+
+        numero: pedidos.length + 1,
+
+        cliente: cliente,
+
+        produtos: [...pedidoAtual],
+
+        total: total,
+
+        status: "Pendente",
+
+        data: new Date().toLocaleString("pt-BR")
+
+    };
+
+
+    pedidos.push(pedido);
+
+
+    salvar();
+
+
+    pedidoAtual = [];
+
+    document.getElementById("cliente").value = "";
+
+
+    mostrarPedidoAtual();
+
+    mostrarPedidos();
+
+
+    alert(
+        "Pedido #" + pedido.numero +
+        " criado com sucesso!"
+    );
+
+}
+
+
+function salvar() {
+
+    localStorage.setItem(
+        "pdvPedidos",
+        JSON.stringify(pedidos)
+    );
+
+}
+
+
+function mostrarPedidos() {
+
+    const area = document.getElementById("listaPedidos");
+
+    area.innerHTML = "";
+
+
+    if (pedidos.length === 0) {
+
+        area.innerHTML =
+            '<p class="vazio">Nenhum pedido realizado.</p>';
+
+        return;
+    }
+
+
+    pedidos.slice().reverse().forEach(function(pedido) {
+
+        const card = document.createElement("div");
+
+        card.className = "pedido-card";
+
+
+        let produtos = "";
+
+
+        pedido.produtos.forEach(function(item) {
+
+            produtos += `
+
+                <div class="pedido-produto">
+
+                    <span>
+                        ${item.quantidade}x ${item.produto}
+                    </span>
+
+                    <strong>
+                        ${dinheiro(item.subtotal)}
+                    </strong>
+
+                </div>
+
+            `;
+
+        });
+
+
+        const classe = statusClasse(pedido.status);
+
+
+        card.innerHTML = `
+
+            <div class="pedido-cabecalho">
+
+                <div>
+
+                    <strong>
+                        Pedido #${pedido.numero}
+                    </strong>
+
+                    <div>
+                        Cliente: ${pedido.cliente}
+                    </div>
+
+                    <small>
+                        ${pedido.data}
+                    </small>
+
+                </div>
+
+                <span class="status ${classe}">
+                    ${pedido.status}
+                </span>
+
+            </div>
+
+
+            <div>
+                ${produtos}
+            </div>
+
+
+            <div class="pedido-total">
+                Total: ${dinheiro(pedido.total)}
+            </div>
+
+
+            <div class="acoes">
+
+                <button
+                    class="preparo-btn"
+                    onclick="mudarStatus(${pedido.id}, 'Em preparo')">
+                    Em preparo
+                </button>
+
+                <button
+                    class="pronto-btn"
+                    onclick="mudarStatus(${pedido.id}, 'Pronto')">
+                    Pronto
+                </button>
+
+                <button
+                    class="entregue-btn"
+                    onclick="mudarStatus(${pedido.id}, 'Entregue')">
+                    Entregue
+                </button>
+
+                <button
+                    class="cancelar-btn"
+                    onclick="mudarStatus(${pedido.id}, 'Cancelado')">
+                    Cancelar
+                </button>
+
+            </div>
+
+        `;
+
+
+        area.appendChild(card);
+
+    });
+
+}
+
+
+function mudarStatus(id, status) {
+
+    const pedido = pedidos.find(function(item) {
+
+        return item.id === id;
+
+    });
+
+
+    if (!pedido) return;
+
+
+    pedido.status = status;
+
+    salvar();
+
+    mostrarPedidos();
+
+}
+
+
+function statusClasse(status) {
+
+    if (status === "Pendente") return "pendente";
+
+    if (status === "Em preparo") return "preparo";
+
+    if (status === "Pronto") return "pronto";
+
+    if (status === "Entregue") return "entregue";
+
+    if (status === "Cancelado") return "cancelado";
+
+    return "";
+
+}
+
+
+function limparPedidos() {
+
+    if (pedidos.length === 0) {
+
+        alert("Não existem pedidos.");
+
+        return;
+    }
+
+
+    if (!confirm(
+        "Tem certeza que deseja apagar todos os pedidos?"
+    )) {
+        return;
+    }
+
+
+    pedidos = [];
+
+    salvar();
+
+    mostrarPedidos();
+
+}
+
+
+function sair() {
+
+    window.history.back();
+
+}
+
+
+mostrarPedidoAtual();
+
+mostrarPedidos();
+
+</script>
+
+</body>
+</html>
